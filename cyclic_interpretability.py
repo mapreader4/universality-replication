@@ -50,25 +50,33 @@ def rep_space_projection(k, embedding):
             
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-model = mma.MLP(mma.MODULUS)
-model.load_state_dict(torch.load('model_weights.pth', map_location=device))
-model.eval()
+def eval_representations_of_model(model_number):
+    model = mma.MLP(mma.MODULUS)
+    model.load_state_dict(torch.load(f"model_weights_{model_number}.pth", map_location=device))
+    model.eval()
 
-left_embedding = model.left_embedding.weight
-right_embedding = model.right_embedding.weight
-mlp = model.mlp[0].weight
-unembedding = model.unembedding.weight
+    left_embedding = model.left_embedding.weight
+    right_embedding = model.right_embedding.weight
+    mlp = model.mlp[0].weight
+    unembedding = model.unembedding.weight
 
-left_input, right_input = build_full_dataset()
-actual_logits = model(left_input, right_input)
-actual_logits = actual_logits.flatten()
+    left_input, right_input = build_full_dataset()
+    actual_logits = model(left_input, right_input)
+    actual_logits = actual_logits.flatten()
 
-for k in range(0, math.ceil(mma.MODULUS/2)):
-    if ((logit_sim := logit_similarity(k, actual_logits)) > 0.005):
-        print(f'Representation {k} has logit similarity {logit_sim}')
-    if ((left_sim := rep_space_projection(k, left_embedding.T)) > 0.05):
-        print(f'Representation {k} explains {left_sim:.2%} of left embedding')
-    if ((right_sim := rep_space_projection(k, right_embedding.T)) > 0.05):
-        print(f'Representation {k} explains {right_sim:.2%} of right embedding')
-    if ((out_sim := rep_space_projection(k, unembedding)) > 0.05):
-        print(f'Representation {k} explains {out_sim:.2%} of unembedding')
+    with open('model_representations.csv', 'a') as csvfile:
+        writer = csv.writer(csvfile)
+        for k in range(0, math.ceil(mma.MODULUS/2)):
+            if ((logit_sim := logit_similarity(k, actual_logits)) > 0.005):
+                print(f'Representation {k} has logit similarity {logit_sim}')
+            if ((left_sim := rep_space_projection(k, left_embedding.T)) > 0.05):
+                print(f'Representation {k} explains {left_sim:.2%} of left embedding')
+            if ((right_sim := rep_space_projection(k, right_embedding.T)) > 0.05):
+                print(f'Representation {k} explains {right_sim:.2%} of right embedding')
+            if ((out_sim := rep_space_projection(k, unembedding)) > 0.05):
+                print(f'Representation {k} explains {out_sim:.2%} of unembedding')
+            writer.writerow([model_number, k, logit_sim.item(), left_sim.item(), right_sim.item(), out_sim.item()])
+
+for i in range(1,5):
+    print(f"Model Number {i}:")
+    eval_representations_of_model(i)
