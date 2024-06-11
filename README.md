@@ -26,7 +26,21 @@ Chughtai’s original paper also contained a variety of other checks to see if G
 
 ## Results
 
-[WILL BE ADDED SHORTLY]
+![logit similarity](./logits.png)
+
+**Figure 1: Logit similarity for each representation and model**
+
+![left embedding variance](./lefts.png)
+
+**Figure 2: Percentage of left embedding variance explained by each representation for each model**
+
+![right embedding variance](./rights.png)
+
+**Figure 3: Percentage of right embedding variance explained by each representation for each model**
+
+![unembedding variance](./outs.png)
+
+**Figure 4: Percentage of unembedding variance explained by each representation for each model**
 
 ## Credit
 
