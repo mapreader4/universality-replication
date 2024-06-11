@@ -16,15 +16,17 @@ Chughtai’s original paper found that models trained on a variety of groups con
 
 ## Methods
 
-For this project, I trained four one-layer multi-layer perceptron models. Each element of C_113 was represented as a one-hot vector, and two such vectors were passed as inputs to the model. Each of these vectors was then put through separate embedding layers of size 256 (the left and right embeddings respectively). The results were concatenated and then fed through an MLP layer using ReLU with 128 neurons. Finally, the outputs of the neurons were sent through an unembedding layer to give a logit for each element. The models were trained using an independently randomly selected 40% of the element pairs, cross-entropy loss, and an AdamW optimizer.
+For this project, I trained four one-layer multi-layer perceptron models. Each element of C_113 was represented as a one-hot vector, and two such vectors were passed as inputs to the model. Each of these vectors was then put through separate embedding layers of size 256 (the left and right embeddings respectively). The results were concatenated and then fed through an MLP layer using ReLU with 128 neurons. Finally, the outputs of the neurons were sent through an unembedding layer to give a logit for each element. None of the layers had biases. The models were trained using an independently randomly selected 40% of the element pairs, cross-entropy loss, and an AdamW optimizer.
 
 The GCR algorithm predicts a particular calculation that results in the logits: the trace of a matrix product. Since this gives, for each representation, a specific prediction for the output vector, we can check the cosine similarity to see if this prediction holds. Given the high dimensionality of the space, high similarity values are unlikely to happen by coincidence, and indicate that the GCR algorithm is being implemented.
 
 Furthermore, the GCR algorithm also predicts that the embedding and unembedding matrices will contain some way of calculating the elements of the rotation matrices for any representations used. Thus, we can flatten the list of matrices in a particular representation into a few vectors of length 113, then check to see how much of the variance of the embedding and unembedding matrices are explained by the resulting subspace. By a theorem in the appendix of the original paper, representation spaces are orthogonal, so a completely random embedding matrix should most likely have variance explained roughly equally by each representation. If the variance explained is concentrated into a few representations, this is another indication that the GCR algorithm is being implemented.
 
-Chughtai’s original paper also contained a variety of other checks to see if GCR was implemented, including analysis of the hidden layer neurons and ablating neurons in the directions of the representations. Unfortunately, due to time and skill issues, I was unable to complete these by the deadline. I may come back to finish this later; however, in the meantime, I believe my current implementation contains enough evidence to successfully replicate.
+Chughtai’s original paper also contained a variety of other checks to see if GCR was implemented, including analysis of the hidden layer neurons and ablating neurons in the directions of the representations. Unfortunately, due to time and skill issues, I was unable to complete these by the deadline. I may come back to finish this later; however, in the meantime, I believe my current implementation contains enough evidence to count as replication.
 
 ## Results
+
+Each of the graphs below displays some measure of the influence of each representation on each model. For C_113, there are 57 such representations: 56 representations for r=1 through r=56 that map each element n to the rotation matrix for rn/113 of a circle, and the trivial representation, which maps all elements to 1. For convenience, I’ve labeled this trivial representation as r=0; it shows up on logit similarity but nothing else.
 
 ![logit similarity](./logits.png)
 
@@ -41,6 +43,10 @@ Chughtai’s original paper also contained a variety of other checks to see if G
 ![unembedding variance](./outs.png)
 
 **Figure 4: Percentage of unembedding variance explained by each representation for each model**
+
+From these graphs, we find exactly the expected results: all models appear to have learned the GCR algorithm, but each uses different representations, with little repetition. This provides some evidence for the weak universality hypothesis (neural nets learn similar algorithms for similar tasks), but against the strong universality hypothesis (neural nets learn the same implementations of those algorithms).
+
+As a result, I was able to confirm three of the five results of the original paper: all networks implement GCR, the representations learned vary between random seeds, and the number of representations learned also varies. The two other results (lower dimensional representations learned first, no strong preference for learning simple representations over complex ones) require groups with more complex structure to test, so I will be unable to tell if they replicated or not without further work.
 
 ## Credit
 
