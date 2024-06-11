@@ -27,3 +27,7 @@ Chughtai’s original paper also contained a variety of other checks to see if G
 ## Results
 
 [WILL BE ADDED SHORTLY]
+
+## Credit
+
+Thank you to Bilal Chughtai for your work on the original Toy Model of Universality paper, and to Arun Jose and Robert McCarthy for your mentorship throughout the AI Safety Fundamentals course.
