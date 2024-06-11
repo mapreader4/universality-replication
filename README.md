@@ -13,3 +13,13 @@ Bilal Chughtai’s paper [A Toy Model of Universality](https://arxiv.org/pdf/230
 Notably, most groups have multiple representations. Consider the cyclic group of order 12, which is equivalent to modular arithmetic with a modulus of 12. The obvious representation for this group is to represent 1 as the rotation matrix for 1/12 of the circle, 2 as the rotation matrix for 2/12, and so on, as on a clock. However, another possible representation matrix is to represent 1 as a 5/12 rotation, skipping around the clock. These multiple representations make the problem of group composition a natural choice for assessing strong and weak universality - we can check to see if each model learns the GCR algorithm, *and* we can see if they learn the same representations.
 
 Chughtai’s original paper found that models trained on a variety of groups consistently learned the GCR algorithm, but varied on which representations they learned. In this project, I replicate this result on the cyclic group of order 113, or equivalently, modular addition with modulus 113.
+
+## Methods
+
+For this project, I trained four one-layer multi-layer perceptron models. Each element of C_113 was represented as a one-hot vector, and two such vectors were passed as inputs to the model. Each of these vectors was then put through separate embedding layers of size 256 (the left and right embeddings respectively). The results were concatenated and then fed through an MLP layer using ReLU with 128 neurons. Finally, the outputs of the neurons were sent through an unembedding layer to give a logit for each element. The models were trained using an independently randomly selected 40% of the element pairs, cross-entropy loss, and an AdamW optimizer.
+
+The GCR algorithm predicts a particular calculation that results in the logits: the trace of a matrix product. Since this gives, for each representation, a specific prediction for the output vector, we can check the cosine similarity to see if this prediction holds. Given the high dimensionality of the space, this is unlikely to happen by coincidence.
+
+## Unfinished
+
+I am almost done with the writeup, but it is late enough that it's time for me to go to sleep. I'll finish adding the rest of the methods and the results in the morning.
